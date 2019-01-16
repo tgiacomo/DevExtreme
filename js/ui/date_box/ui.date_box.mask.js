@@ -87,16 +87,20 @@ let DateBoxMask = DateBoxBase.inherit({
     },
 
     _getFormatPattern() {
+        if(this._formatPattern) {
+            return this._formatPattern;
+        }
         var format = this._strategy.getDisplayFormat(this.option("displayFormat")),
             isLDMLPattern = typeof format === "string" && (format.indexOf("0") >= 0 || format.indexOf("#") >= 0);
 
         if(isLDMLPattern) {
-            return format;
+            this._formatPattern = format;
         } else {
-            return getFormat(function(value) {
+            this._formatPattern = getFormat(function(value) {
                 return dateLocalization.format(value, format);
             });
         }
+        return this._formatPattern;
     },
 
     _setNewDateIfEmpty() {
@@ -167,16 +171,20 @@ let DateBoxMask = DateBoxBase.inherit({
         return this.option("useMaskBehavior") && this.option("mode") === "text";
     },
 
+    _initMaskState() {
+        this._activePartIndex = 0;
+        this._formatPattern = null;
+        // this._regExpInfo = getRegExpInfo(this._getFormatPattern(), dateLocalization._dateParts);
+        this._loadMaskValue();
+    },
     _renderMask() {
         this.callBase();
         this._detachMaskEvents();
-        this._clearState();
+        this._clearMaskState();
 
         if(this._useMaskBehavior()) {
-            this._activePartIndex = 0;
             this._attachMaskEvents();
-
-            this._loadMaskValue();
+            this._initMaskState();
             this._renderDateParts();
         }
     },
@@ -189,7 +197,9 @@ let DateBoxMask = DateBoxBase.inherit({
         const text = this.option("text") || this._getDisplayedText(this._maskValue);
 
         if(text) {
+            // this._dateParts = renderDateParts(text, this._regExpInfo);
             this._dateParts = renderDateParts(text, this._getFormatPattern());
+
             this._selectNextPart(0);
         }
     },
@@ -267,7 +277,7 @@ let DateBoxMask = DateBoxBase.inherit({
             limits = this._getActivePartLimits(),
             maxLimitLength = String(limits.max).length;
 
-        return ((zeroes && zeroes[0]) || "" + String(value)).substr(-maxLimitLength);
+        return ((zeroes && zeroes[0] || "") + String(value)).substr(-maxLimitLength);
     },
 
     _setActivePartValue(value, dateValue) {
@@ -410,7 +420,7 @@ let DateBoxMask = DateBoxBase.inherit({
         }
     },
 
-    _clearState() {
+    _clearMaskState() {
         this._clearSearchValue();
         delete this._dateParts;
         delete this._activePartIndex;
@@ -419,14 +429,14 @@ let DateBoxMask = DateBoxBase.inherit({
 
     reset() {
         this.callBase();
-        this._clearState();
+        this._clearMaskState();
         this._activePartIndex = 0;
     },
 
     _clean() {
         this.callBase();
         this._detachMaskEvents();
-        this._clearState();
+        this._clearMaskState();
     }
 });
 

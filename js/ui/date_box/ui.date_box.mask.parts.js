@@ -112,6 +112,7 @@ const getLimits = (pattern, date) => {
         H: { min: 0, max: 23 },
         h: { min: 0, max: 23 },
         m: { min: 0, max: 59 },
+        s: { min: 0, max: 59 },
         a: { min: 0, max: 1 }
     };
 
@@ -130,4 +131,10 @@ const getDatePartIndexByPosition = (dateParts, position) => {
     return null;
 };
 
-export { getDatePartIndexByPosition, renderDateParts };
+
+// exports.getDatePartIndexByPosition = getDatePartIndexByPosition;
+// exports.renderDateParts = renderDateParts;
+export { getDatePartIndexByPosition };
+export { renderDateParts };
+
+// export { getDatePartIndexByPosition, renderDateParts };
