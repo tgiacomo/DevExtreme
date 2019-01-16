@@ -8,7 +8,6 @@ import eventsEngine from "../../events/core/events_engine";
 import wheelEvent from "../../events/core/wheel";
 import { getDatePartIndexByPosition, renderDateParts } from "./ui.date_box.mask.parts";
 import dateLocalization from "../../localization/date";
-import { getRegExpInfo } from "../../localization/ldml/date.parser";
 import { getFormat } from "../../localization/ldml/date.format";
 import DateBoxBase from "./ui.date_box.base";
 const MASK_EVENT_NAMESPACE = "dateBoxMask",
@@ -97,14 +96,13 @@ let DateBoxMask = DateBoxBase.inherit({
             this._formatPattern = format;
         } else {
             this._formatPattern = getFormat(function(value) {
-                return dateLocalization.default.format(value, format);
+                return dateLocalization.format(value, format);
             });
             // return getFormat(function(value) {
             //     return dateLocalization.format(value, format);
             // });
         }
         return this._formatPattern;
-
     },
 
     _setNewDateIfEmpty() {
@@ -178,10 +176,10 @@ let DateBoxMask = DateBoxBase.inherit({
     _initMaskState() {
         this._activePartIndex = 0;
         this._formatPattern = null;
-        this._regExpInfo = getRegExpInfo(this._getFormatPattern(), dateLocalization.default);
+
+        // this._regExpInfo = getRegExpInfo(this._getFormatPattern(), dateLocalization._dateParts);
         this._loadMaskValue();
     },
-
     _renderMask() {
         this.callBase();
         this._detachMaskEvents();
@@ -201,7 +199,9 @@ let DateBoxMask = DateBoxBase.inherit({
         const text = this.option("text") || this._getDisplayedText(this._maskValue);
 
         if(text) {
-            this._dateParts = renderDateParts(text, this._regExpInfo);
+            // this._dateParts = renderDateParts(text, this._regExpInfo);
+            this._dateParts = renderDateParts(text, this._getFormatPattern());
+
             this._selectNextPart(0);
         }
     },
@@ -278,6 +278,7 @@ let DateBoxMask = DateBoxBase.inherit({
         const zeroes = this._searchValue.match(/^0+/),
             limits = this._getActivePartLimits(),
             maxLimitLength = String(limits.max).length;
+
         return ((zeroes && zeroes[0] || "") + String(value)).substr(-maxLimitLength);
     },
 

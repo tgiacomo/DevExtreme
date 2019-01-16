@@ -132,4 +132,10 @@ const getDatePartIndexByPosition = (dateParts, position) => {
     return null;
 };
 
-export { getDatePartIndexByPosition, renderDateParts };
+
+// exports.getDatePartIndexByPosition = getDatePartIndexByPosition;
+// exports.renderDateParts = renderDateParts;
+export { getDatePartIndexByPosition };
+export { renderDateParts };
+
+// export { getDatePartIndexByPosition, renderDateParts };
